@@ -14,6 +14,8 @@
 
 `POST /api/runs` 接受 `{"sample":"dirty"}`、`{"sample":"clean"}` 或含 `cues` 与 `cuts` CSV 文本的 JSON。`GET /api/check/<sheet>` 查 `source`、`clock`、`edits`、`overlaps`、`balance`，用 `run` 查询归档或用 `sample` 预览。归档详情 `GET /api/runs/<id>`，复算 `POST /api/runs/<id>/repeat`，下载 `GET /api/delivery/<id>/export`。
 
+供应商补丁只交改动行：`POST /api/patches` 提交 `{"patch":"<补丁 CSV>","baseline":"<母版或上一跳档号>"}`，补丁 CSV 也可用末列 `baseline` 自带档号。落版四态为已生效、待定、拒收、未改；撞帧与覆盖账按落版新内容重算，待定或拒收非空时 `GET /api/patches/<id>/certificate` 返回 `PENDING_BLOCK` 禁止签发。详情 `GET /api/patches/<id>`、落版账 `GET /api/patches/<id>/landing`、证据下载 `GET /api/patches/<id>/export`。同一补丁在同一链尖重试复用档号，不新增版本；补丁档与母版分目录存放，旧版证据全程可恢复。
+
 [数据定义](docs/DATA-DICTIONARY.md) · [深度登记](docs/DEPTH.md) · [复算例](docs/FRAME-EXAMPLE.md)
 
 前五张业务页也可用 `POST /api/check/<sheet>` 直接提交样例或原件，只试跑到选中的校对阶段。

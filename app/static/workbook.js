@@ -27,3 +27,22 @@ document.querySelector('#originals')?.addEventListener('submit', event => {
   send(event.submitter, Object.fromEntries(new FormData(event.currentTarget)));
 });
 document.querySelector('#repeat')?.addEventListener('click', event => send(event.currentTarget, null, event.currentTarget.dataset.id));
+document.querySelector('#patch-form')?.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = event.submitter;
+  button.disabled = true;
+  notice.textContent = '正在接补丁…';
+  try {
+    const payload = Object.fromEntries(new FormData(event.currentTarget));
+    const response = await fetch('/api/patches', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok) throw Error(result.message);
+    notice.textContent = result.reused ? '同一补丁重试，未新增版本'
+      : `补丁已落版：生效 ${result.counts.effective}、待定 ${result.counts.pending}、拒收 ${result.counts.rejected}`;
+    location.assign(`/sheet/patches?run=${result.id}`);
+  } catch (error) {
+    notice.textContent = error.message || '补丁提交失败，请重试';
+  } finally { button.disabled = false; }
+});

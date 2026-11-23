@@ -11,6 +11,7 @@
 | M5 时长与丢段对账 | 查看并集覆盖守恒 | `/sheet/balance` `/api/check/balance` | `app/modules/balance/service.py` | `tests/test_balance.py` |
 | M6 批次留档复跑 | 保存原件并逐值复算 | `/sheet/runs` `POST /api/runs` | `app/modules/runs/files.py` `app/modules/runs/service.py` | `tests/test_runs.py` |
 | M7 交付证据签发 | 下载经散列核验的交付证据 | `/sheet/delivery` `/api/delivery/<key>/export` | `app/modules/delivery/checks.py` | `tests/test_delivery.py` |
+| M8 供应商补丁落版 | 只接改动行，算落版状态并重算撞帧覆盖 | `/sheet/patches` `POST /api/patches` | `app/modules/patches/ledger.py` `app/modules/patches/service.py` | `tests/test_patches.py` |
 
 ## 陷阱登记
 
@@ -25,6 +26,9 @@
 | TRAP-14 | C111 内容相撞 | 后稿静默覆盖 | 同号矛盾整组隔离 | `app/modules/source/service.py` | `tests/test_source.py::test_conflicting_revision` |
 | TRAP-17 | `legacy_id` 旧表头 | 硬读当前字段失败 | 按列别名迁移 | `app/modules/source/service.py` | `tests/test_source.py::test_bom_and_alias` |
 | TRAP-23 | C115 与 C116 首尾相接 | 共同边界算重叠 | 半开区间扫线 | `app/modules/overlaps/sweep.py` | `tests/test_overlaps.py::test_touch_is_not_overlap` |
+| TRAP-24 | 补丁声明基线已被前一跳改过 | 静默按旧基线覆盖新正文 | 逐句指纹对账，撞基线行判待定 | `app/modules/patches/ledger.py` | `tests/test_patches.py::test_drift_detected_when_baseline_cue_changed` |
+| TRAP-25 | 补丁只改正文或时间一半 | 同一句正文新、时间旧 | 坏时码整行退回母版并判待定 | `app/modules/patches/ledger.py` | `tests/test_patches.py::test_bad_timecode_reverts_to_master_and_marks_pending` |
+| TRAP-26 | 同一补丁重试 | 又存一份新版本 | 补丁内容加链尖指纹内容寻址，重试复用档号 | `app/modules/patches/service.py` | `tests/test_patches.py::test_retry_same_patch_creates_no_new_version` |
 
 ## 守恒与范围
 

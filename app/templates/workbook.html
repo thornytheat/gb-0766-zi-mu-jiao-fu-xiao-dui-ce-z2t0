@@ -5,10 +5,13 @@
 <div class="workspace"><header><div><div class="slug">POST / SUBTITLE CONFORM</div><h1>字幕交付校对册</h1></div><form id="sample-form"><label for="reel">交付原件</label><select id="reel"><option value="dirty" {{ 'selected' if sample == 'dirty' }}>公映剪辑 · 脏样例</option><option value="clean" {{ 'selected' if sample == 'clean' }}>交付底稿 · 净样例</option></select><button id="publish">归档校对</button></form></header>
 <main><section class="panel register" aria-label="字幕覆盖汇总"><div class="kpis">
 {% for field, label in [('original','原覆盖'),('delivered','交付'),('removed','剪辑移除'),('pending','缺段待证'),('overlap_target_frames','目标重叠')] %}<div><b>{{ totals[field] }}</b><span>{{ label }} <small>{{ '目标帧' if loop.last else '源帧' }}</small></span></div>{% endfor %}
+{% if sheet == 'patches' %}<div class="{{ 'blocked' if totals.pending_cues or totals.rejected_patch_rows else 'clear' }}"><b>{{ totals.pending_cues }} / {{ totals.rejected_patch_rows }}</b><span>待定 / 拒收 <small>行</small></span></div>{% endif %}
 </div><div class="formula"><span class="square">ƒx</span><span id="focused-cell" role="status">归档号 {{ manifest.id[:14] if manifest else '样例预览' }}</span></div></section>
 <section class="panel grid-panel"><div class="sheet-bar"><h2>{{ tabs[sheet] }}</h2><div class="sheet-tools"><span>{{ rows|length }} 行证据</span>
-{% if sheet=='runs' and manifest %}<button id="repeat" data-id="{{ manifest.id }}">复算该版</button>{% endif %}
-{% if sheet=='delivery' and manifest %}<a href="{{ url_for('delivery.export',key=manifest.id) }}">下载交付证据</a>{% endif %}</div></div>
+{% if sheet=='runs' and manifest and kind != 'patch' %}<button id="repeat" data-id="{{ manifest.id }}">复算该版</button>{% endif %}
+{% if sheet=='patches' and manifest and kind == 'patch' %}<a href="{{ url_for('patches.export',key=manifest.id) }}">下载补丁证据</a>{% endif %}
+{% if sheet=='delivery' and manifest and kind != 'patch' %}<a href="{{ url_for('delivery.export',key=manifest.id) }}">下载交付证据</a>{% endif %}</div></div>
 {% include 'grid.html' %}
 {% if sheet == 'source' %}{% include 'submission.html' %}{% endif %}
-</section></main><footer><span>{{ manifest.version if manifest else 'VENUE-CAPTIONS / 1' }}</span><span id="notice" role="status">{{ manifest.created_at[:19] ~ ' UTC' if manifest else '源帧 → 目标帧' }}</span><span>隔离 {{ totals.rejected_unmeasurable }} 行</span></footer></div></div></body></html>
+{% if sheet == 'patches' %}{% include 'patch_form.html' %}{% endif %}
+</section></main><footer><span>{{ manifest.rule_version if kind == 'patch' else (manifest.version if manifest else 'VENUE-CAPTIONS / 1') }}</span><span id="notice" role="status">{{ manifest.created_at[:19] ~ ' UTC' if manifest else '源帧 → 目标帧' }}</span><span>隔离 {{ totals.rejected_unmeasurable }} 行</span>{% if kind == 'patch' %}<span class="{{ 'blocked' if not totals.signable else 'clear' }}">{{ '待定拦截，禁止签发' if not totals.signable else '无待定，可签发' }}</span>{% endif %}</footer></div></div></body></html>

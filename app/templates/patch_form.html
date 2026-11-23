@@ -1,0 +1,8 @@
+<details class="upload" {% if not manifest %}open{% endif %}><summary>提交供应商补丁（只含改动行）</summary>
+<form id="patch-form">
+  <label>补丁 CSV<textarea name="patch" rows="5" required placeholder="cue_id,track,format,in,out,text&#10;C101,简中,FRAME,900,1300,新文本"></textarea></label>
+  <label>基线档号（留空则取补丁内 baseline 列）<input name="baseline" value="{{ manifest.id if manifest else '' }}" placeholder="母版或上一份补丁的 64 位档号"></label>
+  <button>接补丁并复算落版</button>
+</form>
+{% if manifest and kind == 'patch' %}<p class="empty">当前为补丁链第 {{ chain_length }} 跳 <code>{{ manifest.id[:16] }}</code>，新补丁默认接在链尖之后。</p>{% endif %}
+</details>

@@ -1,0 +1,12 @@
+name: venue-captions
+services:
+  app:
+    build: .
+    ports:
+      - "18465:8080"
+    environment:
+      CAPTION_ARCHIVE: /workfiles
+    volumes:
+      - cuts:/workfiles
+volumes:
+  cuts:

@@ -1,0 +1,7 @@
+:root {
+  --bg:#f5f2f4; --paper:#fdfafb; --panel:#f9f4f7; --ink:#301c2a; --muted:#68525f;
+  --accent:#a31782; --accent-ink:#fdf4fa; --accent-soft:#f3dcec; --line:#ded3db; --heavy:#c8b2c1;
+  --ok:#305e4c; --warn:#80521b; --bad:#8c2746; --unknown:#665e69; --row:28px;
+  --type:"Hedvig Letters Sans","Trebuchet MS","PingFang SC",sans-serif; --num:"SFMono-Regular",Consolas,monospace;
+  --pad:20px; --radius:0; --layout:stacked;
+}

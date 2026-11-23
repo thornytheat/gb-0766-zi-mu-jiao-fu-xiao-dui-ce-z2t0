@@ -1,0 +1,14 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>字幕交付校对册</title>
+{% for name in ['theme','layout','grid'] %}<link rel="stylesheet" href="{{ url_for('static', filename=name ~ '.css') }}">{% endfor %}
+<script type="module" src="{{ url_for('static', filename='workbook.js') }}"></script></head><body data-sheet="{{ sheet }}">
+<div class="binder"><nav aria-label="字幕校对页"><a href="/" class="brand"><span aria-hidden="true">▤</span> 场记簿</a><div class="tab-list">{% for tab,label in tabs.items() %}<a {% if sheet == tab %}aria-current="page"{% endif %} href="{{ url_for('sheets.grid',sheet=tab,sample=sample,run=manifest.id if manifest else none) }}">{{ label }}</a>{% endfor %}</div><small>30000/1001 → 24 fps</small></nav>
+<div class="workspace"><header><div><div class="slug">POST / SUBTITLE CONFORM</div><h1>字幕交付校对册</h1></div><form id="sample-form"><label for="reel">交付原件</label><select id="reel"><option value="dirty" {{ 'selected' if sample == 'dirty' }}>公映剪辑 · 脏样例</option><option value="clean" {{ 'selected' if sample == 'clean' }}>交付底稿 · 净样例</option></select><button id="publish">归档校对</button></form></header>
+<main><section class="panel register" aria-label="字幕覆盖汇总"><div class="kpis">
+{% for field, label in [('original','原覆盖'),('delivered','交付'),('removed','剪辑移除'),('pending','缺段待证'),('overlap_target_frames','目标重叠')] %}<div><b>{{ totals[field] }}</b><span>{{ label }} <small>{{ '目标帧' if loop.last else '源帧' }}</small></span></div>{% endfor %}
+</div><div class="formula"><span class="square">ƒx</span><span id="focused-cell" role="status">归档号 {{ manifest.id[:14] if manifest else '样例预览' }}</span></div></section>
+<section class="panel grid-panel"><div class="sheet-bar"><h2>{{ tabs[sheet] }}</h2><div class="sheet-tools"><span>{{ rows|length }} 行证据</span>
+{% if sheet=='runs' and manifest %}<button id="repeat" data-id="{{ manifest.id }}">复算该版</button>{% endif %}
+{% if sheet=='delivery' and manifest %}<a href="{{ url_for('delivery.export',key=manifest.id) }}">下载交付证据</a>{% endif %}</div></div>
+{% include 'grid.html' %}
+{% if sheet == 'source' %}{% include 'submission.html' %}{% endif %}
+</section></main><footer><span>{{ manifest.version if manifest else 'VENUE-CAPTIONS / 1' }}</span><span id="notice" role="status">{{ manifest.created_at[:19] ~ ' UTC' if manifest else '源帧 → 目标帧' }}</span><span>隔离 {{ totals.rejected_unmeasurable }} 行</span></footer></div></div></body></html>

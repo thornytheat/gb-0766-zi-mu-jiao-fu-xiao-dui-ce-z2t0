@@ -1,0 +1,3 @@
+cut,start,end,target,kind
+A,0,1000,0,KEEP
+B,1000,1500,801,KEEP
